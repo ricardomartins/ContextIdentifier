@@ -1,9 +1,9 @@
 package com.rikhardmartins.sisaut.contextidentifier;
 
 public class ConnectorLevel {
-	private int aboveConnections;
-	private int belowConnections;
-	private float connections[][];
+	private List<NeuralCell> aboveConnections;
+	private List<NeuralCell> belowConnections;
+	private float connections[][];  
 
 	public ConnectorLevel() {
 		aboveConnections = 0;
@@ -19,22 +19,31 @@ public class ConnectorLevel {
 	}
 
 	public int registerAboveConnector(NeuralCell theCell) {
-		if (((aboveConnections + 1) * belowConnections) > 0) {
-			float oneArray[][] = new float[aboveConnections + 1][belowConnections];
-			for (int i = 0; i < aboveConnections; i++)
-				for (int j = 0; j < belowConnections; j++)
+		if (((aboveConnections.length + 1) * belowConnections.length) > 0) {
+			float oneArray[][] = new float[aboveConnections.length + 1][belowConnections.length ];
+			for (int i = 0; i < aboveConnections .length ; i++)
+				for (int j = 0; j < belowConnections .length ; j++)
 					oneArray[i][j] = connections[i][j];
-			
+			 connections=oneArray;
 		}
 		aboveConnections++;
 		return (aboveConnections - 1);
 	}
 
 	public int registerBelowConnector(NeuralCell theCell) {
-		return 0;
-	}
+		if ((aboveConnections .length * (belowConnections .length + 1)) > 0) {
+			float oneArray[][] = new float[aboveConnections .length ][belowConnections .length + 1];
+			for (int i = 0; i < aboveConnections .length ; i++)
+				for (int j = 0; j < belowConnections .length ; j++)
+					oneArray[i][j] = connections[i][j];
+			connections=oneArray;
+		}
+		 belowConnections++;
+		return ( belowConnections .length - 1); 	}
 
-	public int generateRandomValues() {
-		return 0;
+	public void generateRandomValues() {
+			for (int i = 0; i < aboveConnections .length ; i++)
+				for (int j = 0; j < belowConnections .length ; j++)
+					connections[i][j]=Math.rand();	
 	}
 }
