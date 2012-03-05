@@ -1,49 +1,55 @@
 package com.rikhardmartins.sisaut.contextidentifier;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConnectorLevel {
 	private List<NeuralCell> aboveConnections;
 	private List<NeuralCell> belowConnections;
-	private float connections[][];  
+	private float connections[][];
 
 	public ConnectorLevel() {
-		aboveConnections = 0;
-		belowConnections = 0;
+		aboveConnections = new ArrayList<NeuralCell>();
+		belowConnections = new ArrayList<NeuralCell>();
 	}
 
-	public int getAboveConnections() {
-		return aboveConnections;
+	public int qboveConnectionsQuantity() {
+		return aboveConnections.size();
 	}
 
-	public int getBelowConnections() {
-		return belowConnections;
+	public int belowConnectionsQuantity() {
+		return belowConnections.size();
 	}
 
 	public int registerAboveConnector(NeuralCell theCell) {
-		if (((aboveConnections.length + 1) * belowConnections.length) > 0) {
-			float oneArray[][] = new float[aboveConnections.length + 1][belowConnections.length ];
-			for (int i = 0; i < aboveConnections .length ; i++)
-				for (int j = 0; j < belowConnections .length ; j++)
+		if (((aboveConnections.size() + 1) * belowConnections.size()) > 0) {
+			float oneArray[][] = new float[aboveConnections.size() + 1][belowConnections
+					.size()];
+			for (int i = 0; i < aboveConnections.size(); i++)
+				for (int j = 0; j < belowConnections.size(); j++)
 					oneArray[i][j] = connections[i][j];
-			 connections=oneArray;
+			connections = oneArray;
 		}
-		aboveConnections++;
-		return (aboveConnections - 1);
+		aboveConnections.add(theCell);
+		return (aboveConnections.size() - 1);
 	}
 
 	public int registerBelowConnector(NeuralCell theCell) {
-		if ((aboveConnections .length * (belowConnections .length + 1)) > 0) {
-			float oneArray[][] = new float[aboveConnections .length ][belowConnections .length + 1];
-			for (int i = 0; i < aboveConnections .length ; i++)
-				for (int j = 0; j < belowConnections .length ; j++)
+		if ((aboveConnections.size() * (belowConnections.size() + 1)) > 0) {
+			float oneArray[][] = new float[aboveConnections.size()][belowConnections
+					.size() + 1];
+			for (int i = 0; i < aboveConnections.size(); i++)
+				for (int j = 0; j < belowConnections.size(); j++)
 					oneArray[i][j] = connections[i][j];
-			connections=oneArray;
+			connections = oneArray;
 		}
-		 belowConnections++;
-		return ( belowConnections .length - 1); 	}
+		belowConnections.add(theCell);
+		return (belowConnections.size() - 1);
+	}
 
 	public void generateRandomValues() {
-			for (int i = 0; i < aboveConnections .length ; i++)
-				for (int j = 0; j < belowConnections .length ; j++)
-					connections[i][j]=Math.rand();	
+		for (int i = 0; i < aboveConnections.size(); i++)
+			for (int j = 0; j < belowConnections.size(); j++)
+				connections[i][j] = (float) Math.random();
 	}
 }
