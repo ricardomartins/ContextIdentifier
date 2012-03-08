@@ -13,7 +13,7 @@ public class ConnectorLevel {
 		belowConnections = new ArrayList<NeuralCell>();
 	}
 
-	public int qboveConnectionsQuantity() {
+	public int aboveConnectionsQuantity() {
 		return aboveConnections.size();
 	}
 
