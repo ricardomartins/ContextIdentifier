@@ -13,6 +13,16 @@ public class ConnectorLevel {
 		belowConnections = new ArrayList<NeuralCell>();
 	}
 
+	public float neuralCellInput(int belowNeuralCellIndex) {
+		int acSize = aboveConnections.size();
+		float result = 0;
+		for (int i = 0; i < acSize; i++) {
+			result += aboveConnections.get(i).getLastOutput()
+					* connections[i][belowNeuralCellIndex];
+		}
+		return result;
+	}
+
 	public int aboveConnectionsQuantity() {
 		return aboveConnections.size();
 	}
