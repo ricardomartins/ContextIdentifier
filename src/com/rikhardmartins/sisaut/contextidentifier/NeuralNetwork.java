@@ -1,7 +1,10 @@
 package com.rikhardmartins.sisaut.contextidentifier;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Environment;
 
 public class NeuralNetwork {
 	private List<NeuralCell> inputs;
@@ -26,18 +29,51 @@ public class NeuralNetwork {
 		for (int i = 0; i < hiddenQuantity; i++)
 			outputs.add(new NeuralCell(lowerLever, null));
 	}
-	
-	public void setInputs(List<Float> inputs){
-		int size = inputs.size(); 
-		if(size != this.inputs.size())
-			return;
-		for(int i = 0; i < size; i++)
-			this.inputs.get(i).overrideCalculation(inputs.get(i));
+
+	public NeuralNetwork(TransferFunction transferFunction) {
+		File homeFolder = new File(Environment.getRootDirectory()
+				.getAbsolutePath() + "ContextIdentifier/");
+
+		if (!homeFolder.exists()) {
+			homeFolder.mkdirs();
+		}
+		String[] files = homeFolder.list(new FilenameFilter() {
+
+			public boolean accept(File dir, String filename) {
+				if (filename.toLowerCase().startsWith("CI"))
+					return true;
+				if (filename.toLowerCase().endsWith(".nn"))
+					return true;
+				return false;
+			}
+		});
+		String lastestFile = "";
+		int max = -1;
+		for (String f : files) {
+			int n = Integer.parseInt(f.substring(2, 7));
+			if (n > max){
+				max = n;
+				lastestFile=f;				
+			}
+		}
+		readNNFile(homeFolder.getAbsolutePath()+lastestFile);
 	}
 	
-	public List<Float> getOutputs(){
+	private void readNNFile(String theFile){
+		
+	}
+
+	public void setInputs(List<Float> inputs) {
+		int size = inputs.size();
+		if (size != this.inputs.size())
+			return;
+		for (int i = 0; i < size; i++)
+			this.inputs.get(i).overrideCalculation(inputs.get(i));
+	}
+
+	public List<Float> getOutputs() {
 		List<Float> result = new ArrayList<Float>();
-		for(NeuralCell nc : outputs)
+		for (NeuralCell nc : outputs)
 			result.add(nc.getLastOutput());
 		return result;
 	}
