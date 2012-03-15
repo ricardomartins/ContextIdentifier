@@ -60,9 +60,30 @@ public class NeuralNetwork {
 	}
 	
 	private void readNNFile(String theFile){
-		
+		// TODO: Implement
 	}
 
+	private void writeNNFile(String theFile){
+		// TODO: Define nn file format
+		// TODO: Implement
+	}
+
+	public List<Float> forwardPass(){
+		for (NeuralCell nc : hiddens){
+			nc.calculateInput();
+			nc.calculateOutput();
+		}
+		for (NeuralCell nc : outputs){
+			nc.calculateInput();
+			nc.calculateOutput();
+		}
+		return getOutputs();
+	}
+	
+	public void backwardPass(){
+		
+	}
+	
 	public void setInputs(List<Float> inputs) {
 		int size = inputs.size();
 		if (size != this.inputs.size())
