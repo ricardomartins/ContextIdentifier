@@ -1,89 +1,86 @@
 package com.rikhardmartins.sisaut.contextidentifier;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import android.os.Environment;
+import java.util.Map;
 
 public class NeuralNetwork {
+
+	public final static int CELL_INTRO_ZEROS = 0;
+	public final static int CELL_INTRO_RANDOM = 7;
+
+	public int cellIntroMethod;
+
+	private Map<String, NeuralCell> index;
 	private List<NeuralCell> inputs;
 	private List<NeuralCell> hiddens;
 	private List<NeuralCell> outputs;
-	private ConnectorLevel upperLevel;
-	private ConnectorLevel lowerLever;
 
-	public NeuralNetwork(int inputQuantity, int hiddenQuantity,
-			int outputQuantity, TransferFunction transferFunction) {
+	public NeuralNetwork(List<String> inputs, List<String> hiddens,
+			List<String> outputs, int cellIntroMethod, TransferFunction transferFunction) {
+
+		this.cellIntroMethod = cellIntroMethod;
 		NeuralCell.transferFunction = transferFunction;
-		inputs = new ArrayList<NeuralCell>();
-		hiddens = new ArrayList<NeuralCell>();
-		outputs = new ArrayList<NeuralCell>();
-		upperLevel = new ConnectorLevel();
-		lowerLever = new ConnectorLevel();
+		this.index = new HashMap<String, NeuralCell>();
 
-		for (int i = 0; i < inputQuantity; i++)
-			inputs.add(new NeuralCell(null, upperLevel));
-		for (int i = 0; i < hiddenQuantity; i++)
-			hiddens.add(new NeuralCell(upperLevel, lowerLever));
-		for (int i = 0; i < hiddenQuantity; i++)
-			outputs.add(new NeuralCell(lowerLever, null));
-	}
-
-	public NeuralNetwork(TransferFunction transferFunction) {
-		File homeFolder = new File(Environment.getRootDirectory()
-				.getAbsolutePath() + "ContextIdentifier/");
-
-		if (!homeFolder.exists()) {
-			homeFolder.mkdirs();
+		this.outputs = new ArrayList<NeuralCell>();
+		for (String s : outputs) {
+			NeuralCell newCell = new NeuralCell(s);
+			this.outputs.add(newCell);
+			this.index.put(s, newCell);
 		}
-		String[] files = homeFolder.list(new FilenameFilter() {
 
-			public boolean accept(File dir, String filename) {
-				if (filename.toLowerCase().startsWith("CI"))
-					return true;
-				if (filename.toLowerCase().endsWith(".nn"))
-					return true;
-				return false;
+		this.hiddens = new ArrayList<NeuralCell>();
+		for (String s : hiddens) {
+			Map<NeuralCell, Float> oLevel = new HashMap<NeuralCell, Float>();
+			for (NeuralCell nc : this.outputs) {
+				oLevel.put(nc, newConnection());
 			}
-		});
-		String lastestFile = "";
-		int max = -1;
-		for (String f : files) {
-			int n = Integer.parseInt(f.substring(2, 7));
-			if (n > max){
-				max = n;
-				lastestFile=f;				
-			}
+			NeuralCell newCell = new NeuralCell(s, oLevel);
+			this.hiddens.add(newCell);
+			this.index.put(s, newCell);
 		}
-		readNNFile(homeFolder.getAbsolutePath()+lastestFile);
-	}
-	
-	private void readNNFile(String theFile){
-		// TODO: Implement
+
+		this.inputs = new ArrayList<NeuralCell>();
+		for (String s : inputs) {
+			Map<NeuralCell, Float> oLevel = new HashMap<NeuralCell, Float>();
+			for (NeuralCell nc : this.hiddens) {
+				oLevel.put(nc, newConnection());
+			}
+			NeuralCell newCell = new NeuralCell(s, oLevel);
+			this.inputs.add(newCell);
+			this.index.put(s, newCell);
+		}
 	}
 
-	private void writeNNFile(String theFile){
-		// TODO: Define nn file format
-		// TODO: Implement
+	private float newConnection() {
+		switch (cellIntroMethod) {
+		case CELL_INTRO_ZEROS:
+			return 0.0f;
+		case CELL_INTRO_RANDOM:
+			return (float) ((Math.random() * 2.0f) - 1.0f);
+		default:
+			return 0;
+		}
 	}
-
-	public List<Float> forwardPass(){
-		for (NeuralCell nc : hiddens){
+/*
+	public List<Float> forwardPass() {
+		for (NeuralCell nc : hiddens) {
 			nc.calculateInput();
 			nc.calculateOutput();
 		}
-		for (NeuralCell nc : outputs){
+		for (NeuralCell nc : outputs) {
 			nc.calculateInput();
 			nc.calculateOutput();
 		}
 		return getOutputs();
 	}
-	
-	public void backwardPass(){
-		
+
+	public void backwardPass() {
+
 	}
-	
+
 	public void setInputs(List<Float> inputs) {
 		int size = inputs.size();
 		if (size != this.inputs.size())
@@ -91,7 +88,7 @@ public class NeuralNetwork {
 		for (int i = 0; i < size; i++)
 			this.inputs.get(i).overrideCalculation(inputs.get(i));
 	}
-
+*/
 	public List<Float> getOutputs() {
 		List<Float> result = new ArrayList<Float>();
 		for (NeuralCell nc : outputs)

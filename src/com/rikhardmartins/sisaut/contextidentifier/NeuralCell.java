@@ -1,41 +1,50 @@
 package com.rikhardmartins.sisaut.contextidentifier;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class NeuralCell {
-	private ConnectorLevel aboveConnectorLevel;
-	private int aboveConnectorLevelIndex;
+	private String cellName;
 	private float lastInput;
 	private float lastOutput;
+	private Map<NeuralCell, Float> outputs;
+
+	private float inputAccumulator;
 
 	public static TransferFunction transferFunction;
 
-	public NeuralCell(ConnectorLevel aboveConnections,
-			ConnectorLevel belowConnections) {
-		aboveConnectorLevel = aboveConnections;
-		if (aboveConnections != null)
-			aboveConnectorLevelIndex = aboveConnections
-					.registerBelowConnector(this);
-		else
-			aboveConnectorLevelIndex = -1;
-		if (belowConnections != null)
-			belowConnections.registerAboveConnector(this);
+	public NeuralCell(String cellName) {
+		this.cellName = cellName;
+		inputAccumulator = 0.0f;
 	}
 
-	public float calculateInput() {
-		if (aboveConnectorLevelIndex == -1) {
-			return 0.0f;
+	public NeuralCell(String cellName, Map<NeuralCell, Float> outputs) {
+		this.cellName = cellName;
+		this.outputs = outputs;
+		inputAccumulator = 0.0f;
+	}
+
+	public int addOutput(NeuralCell cell, float weight){
+		if(outputs==null){
+			outputs = new HashMap<NeuralCell, Float>();
 		}
-		lastInput = aboveConnectorLevel
-				.neuralCellInput(aboveConnectorLevelIndex);
-		return lastInput;
+		outputs.put(cell, weight);
+		return outputs.size();
+	}
+	
+	public void inputValue(float value) {
+		inputAccumulator += value;
 	}
 
 	public float calculateOutput() {
-		lastOutput = transferFunction.transfer(lastInput);
+		lastOutput = transferFunction.transfer(lastInput = inputAccumulator);
+		inputAccumulator = 0.0f;
 		return lastOutput;
 	}
 
-	public float overrideCalculation(float inOut) {
+	public float injectOutput(float inOut) {
 		lastInput = lastOutput = inOut;
+		inputAccumulator = 0.0f;
 		return inOut;
 	}
 
@@ -45,5 +54,9 @@ public class NeuralCell {
 
 	public float getLastOutput() {
 		return lastOutput;
+	}
+	
+	public String getCellName(){
+		return cellName;
 	}
 }
