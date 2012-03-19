@@ -64,7 +64,26 @@ public class NeuralNetwork {
 			return 0;
 		}
 	}
-/*
+
+	public NeuralCell getNeuralCell(String cellName){
+		return index.get(cellName);
+	}
+	
+	public List<String> getAllOutputsNames(){
+		List<String> result = new ArrayList<String>();
+		for (NeuralCell nc : outputs)
+			result.add(nc.getCellName());
+		return result;
+	}
+	
+	public List<String> getAllInputsNames(){
+		List<String> result = new ArrayList<String>();
+		for (NeuralCell nc : inputs)
+			result.add(nc.getCellName());
+		return result;
+	}
+
+	/*
 	public List<Float> forwardPass() {
 		for (NeuralCell nc : hiddens) {
 			nc.calculateInput();
@@ -89,10 +108,14 @@ public class NeuralNetwork {
 			this.inputs.get(i).overrideCalculation(inputs.get(i));
 	}
 */
-	public List<Float> getOutputs() {
-		List<Float> result = new ArrayList<Float>();
+	public Map<String, Float> getAllOutputs() {
+		Map<String, Float> result = new HashMap<String, Float>();
 		for (NeuralCell nc : outputs)
-			result.add(nc.getLastOutput());
+			result.put(nc.getCellName(), nc.getLastOutput());
 		return result;
+	}
+
+	public float getOneOutput(String outputCellName) {
+		return index.get(outputCellName).getLastOutput();
 	}
 }
